@@ -1,0 +1,12 @@
+[package]
+name = "indicator_math"
+version = "0.6.1"
+edition = "2021"
+
+description = "A technical analysis indicator library for Rust: SMA, EMA, WMA, HMA, EHMA, MACD and more."
+license = "MIT"
+repository = "https://github.com/Pick999999/indicator_math"
+documentation = "https://docs.rs/indicator_math"
+homepage = "https://github.com/Pick999999/indicator_math"
+readme = "README.md"
+
