@@ -13,7 +13,7 @@ println!("{:#?}", analysis[50]);
 ให้นำมาสร้าง ข้อมูล วิเคราะห์ ดังนี้ โดยใช้ Rust 
 
  { 
-  timeCandle: เวลาของแท่งเทียน ,
+  timeCandle: เวลาของแท่งเทียน ; 
   colorCandle : สีของแท่งเทียน มี Red หรือ Green หรือ Eaual,
   emaShortValue : ค่า emaShort,
   emaShortSlopeValue : ค่า  slopeValue ของ emaShort,
@@ -36,5 +36,6 @@ println!("{:#?}", analysis[50]);
 
 
 # indicator_math
+
 
 
