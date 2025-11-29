@@ -9,11 +9,12 @@ let analysis = analyze_ema(&candles, &ema_s, &ema_l);
 println!("{:#?}", analysis[50]);
 "# insicator_math" 
 
+```
 เมื่อฉันใช้ indicator_math ทำการหา ema ออกมาได้ 2 เส้นแล้วคือ emaShort และ emaLong 
 ให้นำมาสร้าง ข้อมูล วิเคราะห์ ดังนี้ โดยใช้ Rust 
 
  { 
-  timeCandle: เวลาของแท่งเทียน ; 
+  timeCandle: เวลาของแท่งเทียน ,
   colorCandle : สีของแท่งเทียน มี Red หรือ Green หรือ Eaual,
   emaShortValue : ค่า emaShort,
   emaShortSlopeValue : ค่า  slopeValue ของ emaShort,
@@ -36,6 +37,7 @@ println!("{:#?}", analysis[50]);
 
 
 # indicator_math
+
 
 
 
