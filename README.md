@@ -1,44 +1,53 @@
-# indicator_math Ver 0.6.1
+# indicator_math Ver 0.6.6
 
-Rust technical analysis library: SMA, EMA, WMA, HMA, EHMA, MACD  
-let ema_s = ema(&candles, 5);  
-let ema_l = ema(&candles, 20);  
+# Technical Indicators EMA
 
-let analysis = analyze_ema(&candles, &ema_s, &ema_l);  
+A Rust library for technical analysis with EMA (Exponential Moving Average) and various moving averages.
 
-println!("{:#?}", analysis[50]);  
-"# insicator_math" 
+## Features
 
-```
-เมื่อฉันใช้ indicator_math ทำการหา ema ออกมาได้ 2 เส้นแล้วคือ emaShort และ emaLong 
-ให้นำมาสร้าง ข้อมูล วิเคราะห์ ดังนี้ โดยใช้ Rust 
+- Multiple Moving Averages: SMA, EMA, WMA, HMA, EHMA
+- MACD indicator
+- Comprehensive EMA analysis with turning points
+- Trading signal generation (Call/Put/Hold)
 
- { 
-  timeCandle: เวลาของแท่งเทียน ,
-  colorCandle : สีของแท่งเทียน มี Red หรือ Green หรือ Eaual,
-  emaShortValue : ค่า emaShort,
-  emaShortSlopeValue : ค่า  slopeValue ของ emaShort,
-  emaShortSlopeDirection : ค่า ทิศทางของ smaShort ว่า Up หรือ Down หรือ Pararell,
-  isEmaShortTurnType : ที่จุดนี้เป็น จุด TurnUp หรืิอ TurnDown ,
-  shortDistanceFromLastTurn : ระยะห่างหรือจำนวนแท่งเทียนนับจากจุด TurnType ล่าสุด,
-  PositionShort : ตำแหน่งของ emaShort ว่า อยู่เหนือแท่งเทียน หรือ บนตำแหน่งไหนของแท่งเทียน หรือ ใต้แท่งเทียน ,
-  emaLongValue : ค่า emaLong,
-  emaLongSlopeValue : ค่า  slopeValue ของ emaLong,
-  emaLongSlopeDirection : ค่า ทิศทางของ smaLong ว่า Up หรือ Down หรือ Pararell,
-  isEmaLongTurnType : ที่จุดนี้เป็น จุด TurnUp หรืิอ TurnDown ,
-  LongDistanceFromLastTurn : ระยะห่างหรือจำนวนแท่งเทียนนับจากจุด TurnType ล่าสุด,
-  PositionLong : ตำแหน่งของ emaLong ว่า อยู่เหนือแท่งเทียน หรือ บนตำแหน่งไหนของแท่งเทียน หรือ ใต้แท่งเทียน ,
-  isEMACutType : เป็นจุดตัดระหว่าง emaShort กับ emaLong ใช่หรือไม่ ถ้าเป็น ตัดแบบไหน,
-  distanceFormCutPoint: ระยะห่าง หรือ จำนวนแท่งเทียนนับจากจุด isEMACutType
-  previousColorBack1 : สีของแท่งเทียนก่อนหน้า 1 แท่ง,
-  previousColorBack3 : สีของแท่งเทียนก่อนหน้า 2 แท่ง ,
- }
+## Installation
 
+Add this to your `Cargo.toml`:
 
+\`\`\`toml
+[dependencies]
+technical-indicators-ema = "0.1.0"
+\`\`\`
 
-# indicator_math
+## Usage
 
+\`\`\`rust
+use technical_indicators_ema::{Candle, analyze_ema, MaType, get_action_by_simple};
 
+let candles = vec![
+    Candle { time: 1, open: 100.0, high: 105.0, low: 99.0, close: 103.0 },
+    // ... more candles
+];
 
+// Analyze with EMA
+let analysis = analyze_ema(&candles, 9, 21, MaType::EMA);
 
+// Get trading signal
+for a in &analysis {
+    let action = get_action_by_simple(a);
+    println!("Action: {:?}", action);
+}
+\`\`\`
 
+## License
+
+Licensed under either of Apache License, Version 2.0 or MIT license at your option.
+
+your-project/
+├── Cargo.toml
+├── README.md
+├── LICENSE-MIT (หรือ LICENSE)
+├── LICENSE-APACHE (ถ้าใช้ dual license)
+└── src/
+    └── lib.rs
