@@ -18,6 +18,19 @@ pub struct ValueAtTime {
 }
 
 // ============================================================
+// Moving Average Type Enum
+// ============================================================
+
+#[derive(Debug, Clone, Copy)]
+pub enum MaType {
+    SMA,
+    EMA,
+    WMA,
+    HMA,
+    EHMA,
+}
+
+// ============================================================
 // Helper Functions
 // ============================================================
 
@@ -188,7 +201,21 @@ pub fn macd(candles: &[Candle], fast: usize, slow: usize, signal_p: usize) -> Ma
 }
 
 // ============================================================
-// EMA Analysis
+// Generic MA Calculator
+// ============================================================
+
+fn calculate_ma(candles: &[Candle], period: usize, ma_type: MaType) -> Vec<ValueAtTime> {
+    match ma_type {
+        MaType::SMA => sma(candles, period),
+        MaType::EMA => ema(candles, period),
+        MaType::WMA => wma(candles, period),
+        MaType::HMA => hma(candles, period),
+        MaType::EHMA => ehma(candles, period),
+    }
+}
+
+// ============================================================
+// EMA Analysis Helper Functions
 // ============================================================
 
 fn slope(v1: f64, v2: f64) -> f64 {
@@ -227,6 +254,7 @@ fn back_turn(list: &[&'static str], idx: usize, back: usize) -> &'static str {
 // Output Struct ของ Analysis
 // ============================================================
 
+#[derive(Debug, Clone)]
 pub struct EmaAnalysis {
     pub time_candle: u64,
     pub color_candle: &'static str,
@@ -261,12 +289,40 @@ pub struct EmaAnalysis {
 }
 
 // ============================================================
-// Main Analysis Function
+// Action Signal
 // ============================================================
 
-pub fn analyze_ema(candles: &[Candle], short_p: usize, long_p: usize) -> Vec<EmaAnalysis> {
-    let ema_short = ema(candles, short_p);
-    let ema_long = ema(candles, long_p);
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Action {
+    Call,
+    Put,
+    Hold,
+}
+
+/// ฟังก์ชันสำหรับตัดสินใจ Action แบบง่าย
+/// - ถ้า ShortAbove (ema สั้นอยู่เหนือ ema ยาว) → Call
+/// - ถ้า LongAbove (ema ยาวอยู่เหนือ ema สั้น) → Put
+/// - ถ้า Equal → Hold
+pub fn get_action_by_simple(analysis: &EmaAnalysis) -> Action {
+    match analysis.ema_above {
+        "ShortAbove" => Action::Call,
+        "LongAbove" => Action::Put,
+        _ => Action::Hold,
+    }
+}
+
+// ============================================================
+// Main Analysis Function (รองรับ MaType)
+// ============================================================
+
+pub fn analyze_ema(
+    candles: &[Candle],
+    short_p: usize,
+    long_p: usize,
+    ma_type: MaType,
+) -> Vec<EmaAnalysis> {
+    let ema_short = calculate_ma(candles, short_p, ma_type);
+    let ema_long = calculate_ma(candles, long_p, ma_type);
 
     let mut out = vec![];
 
@@ -370,4 +426,41 @@ pub fn analyze_ema(candles: &[Candle], short_p: usize, long_p: usize) -> Vec<Ema
     }
 
     out
+}
+
+// ============================================================
+// ตัวอย่างการใช้งาน
+// ============================================================
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_action_signal() {
+        let candles = vec![
+            Candle { time: 1, open: 100.0, high: 105.0, low: 99.0, close: 103.0 },
+            Candle { time: 2, open: 103.0, high: 108.0, low: 102.0, close: 107.0 },
+            Candle { time: 3, open: 107.0, high: 110.0, low: 106.0, close: 109.0 },
+            Candle { time: 4, open: 109.0, high: 112.0, low: 108.0, close: 111.0 },
+            Candle { time: 5, open: 111.0, high: 113.0, low: 110.0, close: 112.0 },
+        ];
+
+        // ทดสอบด้วย EMA
+        let analysis = analyze_ema(&candles, 2, 3, MaType::EMA);
+        
+        for a in &analysis {
+            let action = get_action_by_simple(a);
+            println!("Time: {}, EMA Above: {}, Action: {:?}", 
+                     a.time_candle, a.ema_above, action);
+        }
+
+        // ทดสอบด้วย SMA
+        let analysis_sma = analyze_ema(&candles, 2, 3, MaType::SMA);
+        assert!(!analysis_sma.is_empty());
+
+        // ทดสอบด้วย HMA
+        let analysis_hma = analyze_ema(&candles, 2, 3, MaType::HMA);
+        assert!(!analysis_hma.is_empty());
+    }
 }
